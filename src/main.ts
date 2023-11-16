@@ -1,33 +1,28 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { ValidatePayloadExistsPipe } from './shared/util/empty-payload.validation-pipe';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { ValidationPipe } from "@nestjs/common";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { ValidatePayloadExistsPipe } from "./shared/util/empty-payload.validation-pipe";
+import * as dotenv from "dotenv";
 
 async function bootstrap() {
+  dotenv.config();
+
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix("api");
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Claims Badger App Backend')
-    .setDescription('Backend for Claims Badger app')
-    .setVersion('v1.0')
-    .addBearerAuth({
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-      name: 'JWT',
-      description: 'Enter JWT token',
-      in: 'header',
-    })
+    .setTitle("Places API")
+    .setDescription("Backend for Places")
+    .setVersion("v1.0")
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
 
-  SwaggerModule.setup('docs', app, swaggerDocument);
+  SwaggerModule.setup("docs", app, swaggerDocument);
 
   app.useGlobalPipes(
     new ValidatePayloadExistsPipe(),
@@ -35,7 +30,7 @@ async function bootstrap() {
       transform: true,
       forbidNonWhitelisted: true,
       whitelist: true,
-    }),
+    })
   );
 
   await app.listen(3000);
