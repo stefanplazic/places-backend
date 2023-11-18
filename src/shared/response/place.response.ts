@@ -34,6 +34,12 @@ export class WorkingHours {
 }
 
 export class PlaceItem {
+  @ApiProperty({
+    example: "ohGSnJtMIC5nPfYRi_HTAg",
+    description: "Id of the place",
+  })
+  id: string;
+
   @ApiProperty({ example: "Casa Ferlin", description: "Name of the place" })
   name: string;
 

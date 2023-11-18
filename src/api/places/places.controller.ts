@@ -29,6 +29,7 @@ export class PlaceController {
 
     return {
       places: places.map((place) => ({
+        id: place.local_entry_id,
         name: place.displayed_what,
         address: place.displayed_where,
         website: place.addresses[0].contacts.find(
@@ -52,6 +53,7 @@ export class PlaceController {
 
     return {
       places: places.map((place) => ({
+        id: place.local_entry_id,
         name: place.displayed_what,
         address: place.displayed_where,
         website: place.addresses[0].contacts.find(
@@ -74,6 +76,7 @@ export class PlaceController {
     const { result, workingHours } = await this.placeService.getOne(id);
 
     return {
+      id: result.local_entry_id,
       name: result.displayed_what,
       address: result.displayed_where,
       website: result.addresses[0].contacts.find(
