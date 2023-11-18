@@ -1,6 +1,4 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
 import { WinstonModule, utilities } from "nest-winston";
 import * as winston from "winston";
 import { PlaceModule } from "./api/places/places.module";
@@ -21,7 +19,7 @@ import { PlaceModule } from "./api/places/places.module";
     }),
     PlaceModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
