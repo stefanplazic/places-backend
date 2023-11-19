@@ -55,15 +55,6 @@ export class PlaceService {
           .map((el) => `${el.start}-${el.end}`)
           .join("\n");
 
-      // const combinedDays = Object.entries(workingHours).reduce(
-      //   (acc, [day, hours]) => {
-      //     const key = hours === "" ? "CLOSED" : hours;
-      //     acc[key] = acc[key] ? `${acc[key]}-${day}` : day;
-      //     return acc;
-      //   },
-      //   {}
-      // );
-
       return { result, workingHours };
     } catch (error) {
       if (error.response) {
