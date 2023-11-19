@@ -15,8 +15,8 @@ interface WorkingHours {
 
 @Injectable()
 export class PlaceService {
-  placeOneId = "ohGSnJtMIC5nPfYRi_HTAg";
-  placeTwoId = "GXvPAor1ifNfpF0U5PTG0w";
+  placeIds = ["ohGSnJtMIC5nPfYRi_HTAg", "GXvPAor1ifNfpF0U5PTG0w"];
+
   constructor(
     @Inject(PlaceConfigService)
     private readonly placeConfigService: PlaceConfigService
@@ -24,14 +24,11 @@ export class PlaceService {
 
   async getAll() {
     try {
-      const places = await Promise.all([
-        axios.get(
-          `${this.placeConfigService.upstreamBaseUrl}/${this.placeOneId}`
-        ),
-        axios.get(
-          `${this.placeConfigService.upstreamBaseUrl}/${this.placeTwoId}`
-        ),
-      ]);
+      const places = await Promise.all(
+        this.placeIds.map(async (placeId) =>
+          axios.get(`${this.placeConfigService.upstreamBaseUrl}/${placeId}`)
+        )
+      );
 
       return [places[0].data, places[1].data];
     } catch (error) {
@@ -40,40 +37,32 @@ export class PlaceService {
   }
 
   async getOne(id: string) {
-    try {
-      const workingHours: WorkingHours = generateDaysOfWeek();
+    if (!this.placeIds.includes(id))
+      throw new NotFoundException(`There is no place with place id: ${id}`);
 
-      const result = (
-        await axios.get(`${this.placeConfigService.upstreamBaseUrl}/${id}`)
-      ).data;
+    const workingHours: WorkingHours = generateDaysOfWeek();
 
-      // map opening hours to correct format
-      const days = result.opening_hours.days;
+    const result = (
+      await axios.get(`${this.placeConfigService.upstreamBaseUrl}/${id}`)
+    ).data;
 
-      for (const day in days)
-        workingHours[day] = days[day]
-          .map((el) => `${el.start}-${el.end}`)
-          .join("\n");
+    // map opening hours to correct format
+    const days = result.opening_hours.days;
 
-      return { result, workingHours };
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 404)
-          throw new NotFoundException(`Place with id: ${id} not found`);
-      }
-      throw error;
-    }
+    for (const day in days)
+      workingHours[day] = days[day]
+        .map((el) => `${el.start}-${el.end}`)
+        .join("\n");
+
+    return { result, workingHours };
   }
 
   async search(term: string) {
-    const result = await Promise.all([
-      axios.get(
-        `${this.placeConfigService.upstreamBaseUrl}/${this.placeOneId}`
-      ),
-      axios.get(
-        `${this.placeConfigService.upstreamBaseUrl}/${this.placeTwoId}`
-      ),
-    ]);
+    const result = await Promise.all(
+      this.placeIds.map(async (placeId) =>
+        axios.get(`${this.placeConfigService.upstreamBaseUrl}/${placeId}`)
+      )
+    );
 
     const places = [result[0].data, result[1].data];
 
